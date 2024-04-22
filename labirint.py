@@ -9,6 +9,9 @@ clock = pygame.time.Clock()
 
 jetpack_img = pygame.transform.scale(pygame.image.load(f"img/jetpack.png"), (50, 50))
 
+pygame.mixer.music.load('sounds_and_music/nlo-misticheskaya-muzyka_(mp3IQ.net).mp3')
+pygame.mixer.music.set_volume(0.05)
+pygame.mixer.music.play()
 
 class Coins:
     coins_img = []
@@ -123,6 +126,8 @@ class Leha:
     lesha = pygame.image.load('img/petrov_detail.png')
     leha = pygame.transform.scale(lesha, (34, 45))
     leha_rect = leha.get_rect(topleft=(0, 0))
+    sound1 = pygame.mixer.Sound('sounds_and_music/Pickup_Coin10.wav')
+    sound2 = pygame.mixer.Sound('sounds_and_music/Explosion.wav')
 
     SPEED = 1
     coins = 0
@@ -130,6 +135,7 @@ class Leha:
     def is_collision_wall(self):
         for wall in self.walls_object.rects:
             if self.leha_rect.colliderect(wall):
+                self.sound2.play()
                 self.leha_rect.topleft = (0, 0)
                 self.coins = 0
                 self.coins_object.gotten_coins = []
@@ -137,8 +143,10 @@ class Leha:
     def is_collision_coin(self):
         for coin in self.coins_object.coins_rect:
             if self.leha_rect.colliderect(coin):
-                self.coins += 1
-                self.coins_object.gotten_coins.append(coin)
+                if coin not in self.coins_object.gotten_coins:
+                    self.sound1.play()
+                    self.coins += 1
+                    self.coins_object.gotten_coins.append(coin)
 
     def leha_move(self):
         keys = pygame.key.get_pressed()

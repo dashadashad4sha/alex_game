@@ -5,6 +5,7 @@ pygame.init()
 pygame.mixer.music.load('sounds_and_music/scene1music.mp3')
 pygame.mixer.music.set_volume(0.20)
 pygame.mixer.music.play()
+sound1 = pygame.mixer.Sound('sounds_and_music/Hit_Hurt7.wav')
 
 display = pygame.display.set_mode((500, 400))
 pygame.display.set_caption('DD GAME')
@@ -69,6 +70,7 @@ while True:
             exit()
         if e.type == pygame.KEYDOWN:
             i += 1
+            sound1.play()
 
     if i < 6:
         first_scene(i)
