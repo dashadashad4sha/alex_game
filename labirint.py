@@ -1,19 +1,8 @@
 import pygame
-import random
+from parent_class import Main
 
-pygame.init()
 
-display = pygame.display.set_mode((500, 400))
-pygame.display.set_caption('DD GAME')
-clock = pygame.time.Clock()
-
-jetpack_img = pygame.transform.scale(pygame.image.load(f"img/jetpack.png"), (50, 50))
-
-pygame.mixer.music.load('sounds_and_music/nlo-misticheskaya-muzyka_(mp3IQ.net).mp3')
-pygame.mixer.music.set_volume(0.05)
-pygame.mixer.music.play()
-
-class Coins:
+class Coins(Main):
     coins_img = []
     for c in range(1, 6):
         coins_img.append(pygame.transform.scale(pygame.image.load(f"img/coin_animation/ca{c}.png"), (25, 25)))
@@ -28,6 +17,7 @@ class Coins:
 
     def show_coin(self, coords):
         n = (pygame.time.get_ticks() - 100) % 1500
+        display = self.display
         if 0 <= n < 300:
             display.blit(self.coins_img[0], coords)
         elif 300 <= n < 600:
@@ -45,8 +35,7 @@ class Coins:
                 self.show_coin(coords)
 
 
-class Walls:
-
+class Walls(Main):
     wall1 = pygame.image.load('img/wall1.png')
     wall1 = pygame.transform.scale(wall1, (100, 10))
 
@@ -88,6 +77,7 @@ class Walls:
 
     def blit_wall(self, coords, n, rot):
         n = (pygame.time.get_ticks() + n * 300) % 1200
+        display = self.display
         if rot == 1:
             if 0 <= n < 300:
                 display.blit(self.wall1, coords)
@@ -118,7 +108,7 @@ class Walls:
             self.blit_wall(rect, q % 4 + 1, 1)
 
 
-class Leha:
+class Leha(Main):
     def __init__(self, w, c):
         self.walls_object = w
         self.coins_object = c
@@ -150,45 +140,53 @@ class Leha:
 
     def leha_move(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and self.leha_rect .left > 0:
+        if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and self.leha_rect.left > 0:
             self.leha_rect.x -= self.SPEED
-        elif keys[pygame.K_RIGHT] and self.leha_rect .right < 500:
+        elif (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and self.leha_rect.right < 500:
             self.leha_rect.x += self.SPEED
-        elif keys[pygame.K_DOWN] and self.leha_rect .bottom < 400:
+        elif (keys[pygame.K_DOWN] or keys[pygame.K_s]) and self.leha_rect.bottom < 400:
             self.leha_rect.y += self.SPEED
-        elif keys[pygame.K_UP] and self.leha_rect .top > 0:
+        elif (keys[pygame.K_UP] or keys[pygame.K_w]) and self.leha_rect.top > 0:
             self.leha_rect.y -= self.SPEED
 
     def blit_lesha(self):
-        display.blit(self.leha, self.leha_rect)
+        self.display.blit(self.leha, self.leha_rect)
 
 
-walls_logic = Walls()
-coins_logic = Coins()
-lesha_logic = Leha(walls_logic, coins_logic)
+class Labirint(Main):
+    walls_logic = Walls()
+    coins_logic = Coins()
+    lesha_logic = Leha(walls_logic, coins_logic)
 
+    is_running = False
 
-while True:
-    for e in pygame.event.get():
-        if e.type == pygame.QUIT:
-            pygame.quit()
-            exit()
+    def run(self):
+        pygame.mixer.music.load('sounds_and_music/nlo-misticheskaya-muzyka_(mp3IQ.net).mp3')
+        pygame.mixer.music.set_volume(0.04)
+        pygame.mixer.music.play()
+        display = self.display
+        while self.is_running:
+            for e in pygame.event.get():
+                if e.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
 
-    if lesha_logic.leha_rect.collidepoint((498, 398)):
-        display.fill("#04548c")
+            if self.lesha_logic.leha_rect.collidepoint((498, 398)):
+                display.fill("#04548c")
+                self.is_running = False
 
-    else:
-        display.fill("#1e2045")
-        display.blit(jetpack_img, (450, 350))
+            else:
+                display.fill("#1e2045")
+                display.blit(self.jetpack_img, (450, 350))
 
-        walls_logic.show_labirint()
+                self.walls_logic.show_labirint()
 
-        coins_logic.blit_coins()
+                self.coins_logic.blit_coins()
 
-        lesha_logic.is_collision_wall()
-        lesha_logic.leha_move()
-        lesha_logic.blit_lesha()
-        lesha_logic.is_collision_coin()
+                self.lesha_logic.is_collision_wall()
+                self.lesha_logic.leha_move()
+                self.lesha_logic.blit_lesha()
+                self.lesha_logic.is_collision_coin()
 
-    pygame.display.update()
-    clock.tick(110)
+            pygame.display.update()
+            self.clock.tick(110)
