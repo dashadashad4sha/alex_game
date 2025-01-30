@@ -11,14 +11,6 @@ WIDTH = 500
 HEIGHT = 400
 ARIAL_30 = pygame.font.SysFont('Arial', 30)
 
-restart_text = ARIAL_30.render("Нажмите ENTER", True, 'black')
-text_rect = restart_text.get_rect()
-text_rect.center = (WIDTH // 2, HEIGHT // 2)
-
-clock = pygame.time.Clock()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-screen.fill('#f8f8f8')
-
 
 class Car:
     speed = 6
@@ -38,6 +30,10 @@ class Car:
         self.rect.y += self.speed
 
     def blit_car(self, s):
+        """
+        Отрисовка машин
+        :param s: surface, на котором будет машина
+        """
         #  wheels
         pygame.draw.rect(self.surf, '#1b1c1c', (0, 0, 20, 30))
         pygame.draw.rect(self.surf, '#1b1c1c', (70, 0, 20, 30))
@@ -56,6 +52,10 @@ class Car:
         s.blit(self.surf, self.rect)
 
     def collision_animation(self, main_car):
+        """
+        Анимация столкновения с машиной
+        :param main_car: объект класса машины пользователя
+        """
         if self.is_collision:
             if main_car.rect.left > self.rect.left:
                 self.rect.x -= 7
@@ -86,7 +86,7 @@ class MainCar:
 
     lives = 3
 
-    sound_collapse = pygame.mixer.Sound('sounds_and_music/races_collapse.wav')
+    sound_collapse = pygame.mixer.Sound('sounds_and_music/sounds/races_collapse.wav')
 
     def blit_car(self, s):
         # kuzov
@@ -136,7 +136,7 @@ class MainCar:
 
 class Stone:
     speed = 3
-    sound_stone = pygame.mixer.Sound('sounds_and_music/races_stone.wav')
+    sound_stone = pygame.mixer.Sound('sounds_and_music/sounds/races_stone.wav')
     sound_stone.set_volume(0.2)
 
     def __init__(self):
@@ -153,6 +153,10 @@ class Stone:
         self.rect.y += self.speed
 
     def collision_animation(self, main_car):
+        """
+        Анимация столкновения с камнем
+        :param main_car: объект класса машины пользователя
+        """
         if self.rect.colliderect(main_car.rect):
             main_car.stone_collision = 20
         if main_car.stone_collision == 20:
@@ -161,33 +165,28 @@ class Stone:
 
 class Races(Main):
     lesha_logic = Leha(None, None)
-    lesha_logic.leha_rect.center = (250, 350)
-    is_running = False
+    replace_leha_center_flag = True
+
     car_first_object = Car()
     cars = [car_first_object]
 
     stone_first_object = Stone()
     stones = [stone_first_object]
 
-    timer = 1900
+    timer = 0
 
     main = MainCar()
 
     filarmonia_rect = pygame.Rect((0, 0, 400, 400))
     filarmonia_rect.midbottom = (250, 0)
-    filarmonia = pygame.image.load('img/filarmonia.png')
-    filarmonia = pygame.transform.scale(filarmonia, (400, 400))
-
-
-
 
     def run(self):
 
-        pygame.mixer.music.load('sounds_and_music/interworld-metamorphosis_(trmuz.net).mp3')
-        pygame.mixer.music.set_volume(0.15)
-        pygame.mixer.music.play()
+        music_races = pygame.mixer.Sound('sounds_and_music/music/interworld-metamorphosis_(trmuz.net).mp3')
+        music_races.set_volume(0.15)
+        music_races.play()
         while self.is_running:
-            screen.fill('#CFCFDD')
+            self.display.fill('#CFCFDD')
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -208,10 +207,9 @@ class Races(Main):
                     self.stones.append(new_stone)
 
                 for stone in self.stones:
-                    stone.blit_stone(screen)
+                    stone.blit_stone(self.display)
                     stone.move_stone()
                     stone.collision_animation(self.main)
-
 
                 for stone in self.stones:  # remove stones
                     if stone.rect.top > HEIGHT:
@@ -224,7 +222,7 @@ class Races(Main):
                     self.cars.append(new_car)
 
                 for car in self.cars:  # show cars
-                    car.blit_car(screen)
+                    car.blit_car(self.display)
                     car.move()
                     car.collision_animation(self.main)
                     for stone in self.stones:
@@ -236,36 +234,39 @@ class Races(Main):
                         self.cars.remove(car)
 
                 #  USER LOGIC
-                self.main.blit_car(screen)
+                self.main.blit_car(self.display)
                 self.main.move()
                 for car in self.cars:
                     self.main.collisions(car)
 
                 timer_text = ARIAL_30.render(f'{self.timer // 20}', True, 'black')
-                screen.blit(timer_text, (WIDTH - 50, 10))
+                self.display.blit(timer_text, (WIDTH - 50, 10))
 
             elif self.main.lives <= 0 and self.timer < 2000:
-                screen.fill("#f5e9c9")
-                screen.blit(restart_text, text_rect)
+                self.display.fill("#f5e9c9")
+                self.display_window("no", "Нажмите Enter")
             elif self.timer >= 2000:
                 timer_text = ARIAL_30.render(f'{self.timer // 20}', True, 'black')
-                screen.blit(timer_text, (WIDTH - 50, 10))
+                self.display.blit(timer_text, (WIDTH - 50, 10))
 
                 self.display.blit(self.filarmonia, self.filarmonia_rect)
                 self.filarmonia_rect.y += 1
                 if self.filarmonia_rect.bottom >= 350:
-                    pygame.mixer.music.stop()
+                    music_races.stop()
                     self.is_running = False
 
                 if not self.main.rect.colliderect(self.filarmonia_rect):
-                    self.main.blit_car(screen)
+                    self.main.blit_car(self.display)
                     self.main.move()
                     for car in self.cars:
                         self.main.collisions(car)
                 else:
+                    if self.replace_leha_center_flag:
+                        self.replace_leha_center_flag = False
+                        self.lesha_logic.leha_rect.center = self.main.rect.center
                     self.lesha_logic.leha_move()
                     self.lesha_logic.blit_lesha()
 
             # COMMON SETTINGS
             pygame.display.update()
-            clock.tick(60)
+            self.clock.tick(60)

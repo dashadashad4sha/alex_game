@@ -1,6 +1,6 @@
 import pygame
 
-from finaal import FinalScene
+from final_scene import FinalScene
 from first_scene import FirstScene
 from gonki import Races
 from labirint import Labirint
@@ -12,6 +12,9 @@ pygame.init()
 
 
 def main():
+    """
+    Функция для запуска игры
+    """
     games = [
         FirstScene(),
         Labirint(),

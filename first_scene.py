@@ -6,10 +6,8 @@ import pygame
 class FirstScene(Main):
 
     def run(self):
-        scene1_replicas = self.get_replics('dialogs/scene1.txt')
-        pygame.mixer.music.load('sounds_and_music/scene1music.mp3')
-        pygame.mixer.music.set_volume(0.20)
-        pygame.mixer.music.play()
+        scene1_replicas = self.get_replics('dialogs/first_scene.txt')
+        self.music_one.play()
         while self.is_running:
             for e in pygame.event.get():
                 if e.type == pygame.QUIT:
@@ -27,7 +25,7 @@ class FirstScene(Main):
 
                 self.display_window(direction, scene1_replicas[self.i][1:])
             elif self.i > 6:
-                pygame.mixer.music.stop()
+                self.music_one.stop()
                 self.display.fill("#04548c")
                 self.is_running = False
             if self.i == 6:
@@ -36,4 +34,3 @@ class FirstScene(Main):
 
             pygame.display.update()
             self.clock.tick(110)
-

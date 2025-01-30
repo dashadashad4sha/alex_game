@@ -6,7 +6,7 @@ import pygame
 class ThirdScene(Main):
 
     def run(self):
-        pygame.mixer.music.load('sounds_and_music/scene1music.mp3')
+        pygame.mixer.music.load('sounds_and_music/music/scene1music.mp3')
         pygame.mixer.music.set_volume(0.20)
         pygame.mixer.music.play()
         while self.is_running:
@@ -30,4 +30,3 @@ class ThirdScene(Main):
 
             pygame.display.update()
             self.clock.tick(110)
-

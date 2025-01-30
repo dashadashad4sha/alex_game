@@ -13,7 +13,7 @@ class Coins(Main):
         pygame.Rect(5, 315, 25, 25),
         pygame.Rect(460, 213, 25, 25)]
 
-    gotten_coins = []
+    gotten_coins = []  # useless mechanic
 
     def show_coin(self, coords):
         n = (pygame.time.get_ticks() - 100) % 1500
@@ -36,16 +36,16 @@ class Coins(Main):
 
 
 class Walls(Main):
-    wall1 = pygame.image.load('img/wall1.png')
+    wall1 = pygame.image.load('img/wall_animation/wall1.png')
     wall1 = pygame.transform.scale(wall1, (100, 10))
 
-    wall2 = pygame.image.load('img/wall2.png')
+    wall2 = pygame.image.load('img/wall_animation/wall2.png')
     wall2 = pygame.transform.scale(wall2, (100, 10))
 
-    wall4 = pygame.image.load('img/wall4.png')
+    wall4 = pygame.image.load('img/wall_animation/wall4.png')
     wall4 = pygame.transform.scale(wall4, (100, 10))
 
-    wall5 = pygame.image.load('img/wall5.png')
+    wall5 = pygame.image.load('img/wall_animation/wall5.png')
     wall5 = pygame.transform.scale(wall5, (100, 10))
 
     rects_vert = [pygame.Rect(-50, 95, 100, 10),
@@ -116,8 +116,8 @@ class Leha(Main):
     lesha = pygame.image.load('img/petrov_detail.png')
     leha = pygame.transform.scale(lesha, (34, 45))
     leha_rect = leha.get_rect(topleft=(0, 0))
-    sound1 = pygame.mixer.Sound('sounds_and_music/Pickup_Coin10.wav')
-    sound2 = pygame.mixer.Sound('sounds_and_music/Explosion.wav')
+    sound1 = pygame.mixer.Sound('sounds_and_music/sounds/Pickup_Coin10.wav')
+    sound2 = pygame.mixer.Sound('sounds_and_music/sounds/Explosion.wav')
 
     SPEED = 1
     coins = 0
@@ -161,9 +161,9 @@ class Labirint(Main):
     is_running = False
 
     def run(self):
-        pygame.mixer.music.load('sounds_and_music/nlo-misticheskaya-muzyka_(mp3IQ.net).mp3')
-        pygame.mixer.music.set_volume(0.04)
-        pygame.mixer.music.play()
+        music_labirint = pygame.mixer.Sound('sounds_and_music/music/nlo-misticheskaya-muzyka_(mp3IQ.net).mp3')
+        music_labirint.set_volume(0.04)
+        music_labirint.play()
         display = self.display
         while self.is_running:
             for e in pygame.event.get():
@@ -173,6 +173,7 @@ class Labirint(Main):
 
             if self.lesha_logic.leha_rect.collidepoint((498, 398)):
                 display.fill("#04548c")
+                music_labirint.stop()
                 self.is_running = False
 
             else:

@@ -6,10 +6,8 @@ import pygame
 class SecondScene(Main):
 
     def run(self):
-        scene2_replicas = self.get_replics('dialogs/scene2.txt')
-        pygame.mixer.music.load('sounds_and_music/scene1music.mp3')
-        pygame.mixer.music.set_volume(0.20)
-        pygame.mixer.music.play()
+        scene2_replicas = self.get_replics('dialogs/second_scene.txt')
+        self.music_one.play()
         while self.is_running:
             for e in pygame.event.get():
                 if e.type == pygame.QUIT:
@@ -29,7 +27,7 @@ class SecondScene(Main):
                 self.display.fill("#04548c")
                 self.display_window("no", game_rules.bird_rules, 20, 100)
             else:
-                pygame.mixer.music.stop()
+                self.music_one.stop()
                 self.is_running = False
 
             pygame.display.update()
